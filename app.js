@@ -175,13 +175,11 @@ let mode="";
 document.getElementById("add-habit").onclick=()=>{
 mode="habit";
 title.innerText="New Habit";
-modal.classList.remove("hidden");
 };
 
 document.getElementById("add-task").onclick=()=>{
 mode="task";
 title.innerText="New Task";
-modal.classList.remove("hidden");
 };
 
 
