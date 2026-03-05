@@ -169,52 +169,37 @@ fab.onclick=()=>{
 menu.classList.toggle("hidden");
 };
 
-
-let mode="";
+let mode = "";
 
 document.getElementById("add-habit").onclick = () => {
-    mode = "habit";
-    title.innerText = "New Habit";
-    modal.classList.remove("hidden"); // show modal
+  mode = "habit";
+  title.innerText = "New Habit";
+  modal.classList.remove("hidden"); // show modal
 };
 
 document.getElementById("add-task").onclick = () => {
-    mode = "task";
-    title.innerText = "New Task";
-    modal.classList.remove("hidden"); // show modal
+  mode = "task";
+  title.innerText = "New Task";
+  modal.classList.remove("hidden"); // show modal
 };
 
-
 saveBtn.onclick = () => {
-    const name = input.value.trim();
-    if(name === "") return;
+  const name = input.value.trim();
+  if (!name) return;
 
-    if(mode === "habit") {
-        habits.push({ name, streak: 0, done: false });
-    }
+  if (mode === "habit") habits.push({ name, streak: 0, done: false });
+  if (mode === "task") tasks.push({ name, done: false });
 
-    if(mode === "task") {
-        tasks.push({ name, done: false });
-    }
-
-    input.value = "";
-    modal.classList.add("hidden"); // hide modal after save
-
-    save();
-    render();
+  input.value = "";
+  modal.classList.add("hidden"); // hide modal
+  save();
+  render();
 };
 
 cancelBtn.onclick = () => {
-    input.value = "";
-    modal.classList.add("hidden"); // hide modal on cancel
+  input.value = "";
+  modal.classList.add("hidden"); // hide modal
 };
-
-
-cancelBtn.onclick=()=>{
-modal.classList.add("hidden");
-input.value="";
-};
-
 
 document.querySelectorAll(".bottom-nav button").forEach(btn=>{
 
