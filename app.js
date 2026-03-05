@@ -172,33 +172,47 @@ menu.classList.toggle("hidden");
 let mode = "";
 
 document.getElementById("add-habit").onclick = () => {
-  mode = "habit";
-  title.innerText = "New Habit";
-  modal.classList.remove("hidden"); // show modal
+mode="habit";
+title.innerText="New Habit";
+modal.classList.add("show");
 };
 
 document.getElementById("add-task").onclick = () => {
-  mode = "task";
-  title.innerText = "New Task";
-  modal.classList.remove("hidden"); // show modal
+mode="task";
+title.innerText="New Task";
+modal.classList.add("show");
 };
 
 saveBtn.onclick = () => {
-  const name = input.value.trim();
-  if (!name) return;
 
-  if (mode === "habit") habits.push({ name, streak: 0, done: false });
-  if (mode === "task") tasks.push({ name, done: false });
+const name=input.value.trim();
+if(name==="") return;
 
-  input.value = "";
-  modal.classList.add("hidden"); // hide modal
-  save();
-  render();
+if(mode==="habit"){
+habits.push({
+name:name,
+streak:0,
+done:false
+});
+}
+
+if(mode==="task"){
+tasks.push({
+name:name,
+done:false
+});
+}
+
+input.value="";
+modal.classList.remove("show");
+
+save();
+render();
 };
 
-cancelBtn.onclick = () => {
-  input.value = "";
-  modal.classList.add("hidden"); // hide modal
+cancelBtn.onclick=()=>{
+input.value="";
+modal.classList.remove("show");
 };
 
 document.querySelectorAll(".bottom-nav button").forEach(btn=>{
