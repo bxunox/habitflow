@@ -6,13 +6,19 @@ const habitList = document.getElementById("habit-list");
 const taskList = document.getElementById("task-list");
 const completedList = document.getElementById("completed-list");
 
-function save(){
-localStorage.setItem("habits",JSON.stringify(habits));
-localStorage.setItem("tasks",JSON.stringify(tasks));
-localStorage.setItem("heatmap",JSON.stringify(heatmap));
+const modal = document.getElementById("modal");
+const title = document.getElementById("modal-title");
+const input = document.getElementById("input-name");
+const saveBtn = document.getElementById("save-btn");
+const cancelBtn = document.getElementById("cancel-btn");
+
+function save() {
+localStorage.setItem("habits", JSON.stringify(habits));
+localStorage.setItem("tasks", JSON.stringify(tasks));
+localStorage.setItem("heatmap", JSON.stringify(heatmap));
 }
 
-function today(){
+function today() {
 return new Date().toISOString().slice(0,10);
 }
 
@@ -20,29 +26,31 @@ function renderHabits(){
 
 habitList.innerHTML="";
 
-habits.forEach((h,i)=>{
+habits.forEach((habit,i)=>{
 
-const el=document.createElement("div");
-el.className="habit-item";
+const item=document.createElement("div");
+item.className="habit-item";
 
-el.innerHTML=`
-<span>${h.name} 🔥${h.streak}</span>
-<button>${h.done ? "✓":"Done"}</button>
+item.innerHTML=`
+<span>${habit.name} 🔥${habit.streak}</span>
+<button>${habit.done ? "✓":"Done"}</button>
 `;
 
-el.querySelector("button").onclick=()=>{
-h.done=!h.done;
+item.querySelector("button").onclick=()=>{
 
-if(h.done){
-h.streak++;
+habit.done=!habit.done;
+
+if(habit.done){
+habit.streak++;
 updateHeatmap();
 }
 
 save();
 render();
+
 };
 
-habitList.appendChild(el);
+habitList.appendChild(item);
 
 });
 
@@ -53,26 +61,26 @@ function renderTasks(){
 taskList.innerHTML="";
 completedList.innerHTML="";
 
-tasks.forEach((t,i)=>{
+tasks.forEach((task,i)=>{
 
-const el=document.createElement("div");
-el.className="task-item";
+const item=document.createElement("div");
+item.className="task-item";
 
-el.innerHTML=`
-<span>${t.name}</span>
+item.innerHTML=`
+<span>${task.name}</span>
 <button>✓</button>
 `;
 
-el.querySelector("button").onclick=()=>{
-t.done=true;
+item.querySelector("button").onclick=()=>{
+task.done=true;
 save();
 render();
 };
 
-if(t.done){
-completedList.appendChild(el);
+if(task.done){
+completedList.appendChild(item);
 }else{
-taskList.appendChild(el);
+taskList.appendChild(item);
 }
 
 });
@@ -81,28 +89,31 @@ taskList.appendChild(el);
 
 function renderProgress(){
 
-const doneHabits=habits.filter(h=>h.done).length;
-const doneTasks=tasks.filter(t=>t.done).length;
+const doneHabits = habits.filter(h=>h.done).length;
+const doneTasks = tasks.filter(t=>t.done).length;
 
-document.getElementById("habits-progress").innerText=`${doneHabits} / ${habits.length}`;
-document.getElementById("tasks-progress").innerText=`${doneTasks} / ${tasks.length}`;
+document.getElementById("habits-progress").innerText = `${doneHabits} / ${habits.length}`;
+document.getElementById("tasks-progress").innerText = `${doneTasks} / ${tasks.length}`;
 
 let total=0;
 
-if(habits.length+tasks.length>0){
-total=Math.round(((doneHabits+doneTasks)/(habits.length+tasks.length))*100);
+if(habits.length + tasks.length > 0){
+total = Math.round(((doneHabits+doneTasks)/(habits.length+tasks.length))*100);
 }
 
-document.getElementById("total-progress").innerText=`${total}%`;
+document.getElementById("total-progress").innerText = `${total}%`;
 
-document.getElementById("habits-bar").style.width=`${habits.length?doneHabits/habits.length*100:0}%`;
-document.getElementById("tasks-bar").style.width=`${tasks.length?doneTasks/tasks.length*100:0}%`;
+document.getElementById("habits-bar").style.width =
+habits.length ? (doneHabits/habits.length*100)+"%" : "0%";
+
+document.getElementById("tasks-bar").style.width =
+tasks.length ? (doneTasks/tasks.length*100)+"%" : "0%";
 
 }
 
 function updateHeatmap(){
 
-const day=today();
+const day = today();
 
 if(!heatmap[day]) heatmap[day]=0;
 
@@ -122,18 +133,18 @@ const days=30;
 
 for(let i=days;i>=0;i--){
 
-const d=new Date();
-d.setDate(d.getDate()-i);
+const date=new Date();
+date.setDate(date.getDate()-i);
 
-const key=d.toISOString().slice(0,10);
+const key=date.toISOString().slice(0,10);
 
-const val=heatmap[key]||0;
+const value=heatmap[key] || 0;
 
 const cell=document.createElement("div");
 
-if(val==1)cell.classList.add("lvl1");
-if(val==2)cell.classList.add("lvl2");
-if(val>=3)cell.classList.add("lvl3");
+if(value==1) cell.classList.add("lvl1");
+if(value==2) cell.classList.add("lvl2");
+if(value>=3) cell.classList.add("lvl3");
 
 container.appendChild(cell);
 
@@ -150,6 +161,7 @@ renderHeatmap();
 
 render();
 
+
 const fab=document.getElementById("fab");
 const menu=document.getElementById("fab-menu");
 
@@ -157,10 +169,6 @@ fab.onclick=()=>{
 menu.classList.toggle("hidden");
 };
 
-const modal=document.getElementById("modal");
-const title=document.getElementById("modal-title");
-const input=document.getElementById("input-name");
-const saveBtn=document.getElementById("save-btn");
 
 let mode="";
 
@@ -176,16 +184,26 @@ title.innerText="New Task";
 modal.classList.remove("hidden");
 };
 
+
 saveBtn.onclick=()=>{
 
-const name=input.value;
+const name=input.value.trim();
+
+if(name==="") return;
 
 if(mode==="habit"){
-habits.push({name,streak:0,done:false});
+habits.push({
+name:name,
+streak:0,
+done:false
+});
 }
 
 if(mode==="task"){
-tasks.push({name,done:false});
+tasks.push({
+name:name,
+done:false
+});
 }
 
 input.value="";
@@ -196,12 +214,27 @@ render();
 
 };
 
-document.querySelectorAll(".bottom-nav button").forEach(btn=>{
-btn.onclick=()=>{
-document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-document.getElementById(btn.dataset.view).classList.add("active");
+
+cancelBtn.onclick=()=>{
+modal.classList.add("hidden");
+input.value="";
 };
+
+
+document.querySelectorAll(".bottom-nav button").forEach(btn=>{
+
+btn.onclick=()=>{
+
+document.querySelectorAll(".view").forEach(v=>{
+v.classList.remove("active");
 });
+
+document.getElementById(btn.dataset.view).classList.add("active");
+
+};
+
+});
+
 
 if("serviceWorker" in navigator){
 navigator.serviceWorker.register("service-worker.js");

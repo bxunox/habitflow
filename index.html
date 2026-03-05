@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>HabitFlow</title>
 
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="styles.css">
 
 <meta name="theme-color" content="#0f0f10">
-
 </head>
 
 <body>
@@ -20,6 +21,7 @@
 
 <main id="app">
 
+<!-- DASHBOARD -->
 <section id="dashboard" class="view active">
 
 <div class="card">
@@ -48,23 +50,28 @@ Total Progress: <span id="total-progress"></span>
 </section>
 
 
+<!-- HABITS -->
 <section id="habits" class="view">
 <h2>Your Habits</h2>
 <div id="habit-list"></div>
 </section>
 
 
+<!-- TASKS -->
 <section id="tasks" class="view">
-<h2>Today's Tasks</h2>
 
+<h2>Today's Tasks</h2>
 <div id="task-list"></div>
 
 <h3>Completed</h3>
 <div id="completed-list"></div>
+
 </section>
 
 </main>
 
+
+<!-- FLOATING BUTTON -->
 
 <button id="fab">+</button>
 
@@ -74,7 +81,10 @@ Total Progress: <span id="total-progress"></span>
 </div>
 
 
+<!-- MODAL -->
+
 <div id="modal" class="modal hidden">
+
 <div class="modal-content">
 
 <h3 id="modal-title"></h3>
@@ -82,10 +92,14 @@ Total Progress: <span id="total-progress"></span>
 <input id="input-name" placeholder="Name">
 
 <button id="save-btn">Save</button>
+<button id="cancel-btn">Cancel</button>
 
 </div>
+
 </div>
 
+
+<!-- BOTTOM NAV -->
 
 <nav class="bottom-nav">
 <button data-view="dashboard">Dashboard</button>
