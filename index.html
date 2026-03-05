@@ -1,121 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>HabitFlow</title>
-
-<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="styles.css">
-
 <meta name="theme-color" content="#0f0f10">
 </head>
-
 <body>
 
-<header class="top-bar">
-<h1>HabitFlow</h1>
-</header>
+<header class="top-bar">HabitFlow</header>
 
-<main id="app">
-
-<!-- DASHBOARD -->
+<main>
+<!-- Dashboard -->
 <section id="dashboard" class="view active">
-
-<div class="card">
-<h2>Daily Progress</h2>
-
-<div class="progress-block">
-<p>Habits: <span id="habits-progress"></span></p>
-<div class="progress-bar"><div id="habits-bar"></div></div>
-</div>
-
-<div class="progress-block">
-<p>Tasks: <span id="tasks-progress"></span></p>
-<div class="progress-bar"><div id="tasks-bar"></div></div>
-</div>
-
-<p class="total-progress">
-Total Progress: <span id="total-progress"></span>
-</p>
-</div>
-
-<div class="card">
-<h2>Consistency</h2>
-<div id="heatmap" class="heatmap"></div>
-</div>
-
+  <div class="card">
+    <h2>Daily Progress</h2>
+    <p>Habits: <span id="habits-progress">0 / 0</span></p>
+    <p>Tasks: <span id="tasks-progress">0 / 0</span></p>
+  </div>
 </section>
 
-
-<!-- HABITS -->
+<!-- Habits Section -->
 <section id="habits" class="view">
-<h2>Your Habits</h2>
-<div id="habit-list"></div>
+  <h2>Your Habits</h2>
+  <div id="habit-list"></div>
 </section>
 
-
-<!-- TASKS -->
+<!-- Tasks Section -->
 <section id="tasks" class="view">
-
-<h2>Today's Tasks</h2>
-<div id="task-list"></div>
-
-<h3>Completed</h3>
-<div id="completed-list"></div>
-
+  <h2>Today's Tasks</h2>
+  <div id="task-list"></div>
+  <h3>Completed</h3>
+  <div id="completed-list"></div>
 </section>
-
 </main>
 
-
-<!-- FLOATING BUTTON -->
-
+<!-- Floating Button -->
 <button id="fab">+</button>
-
 <div id="fab-menu" class="fab-menu hidden">
-<button id="add-habit">Add Habit</button>
-<button id="add-task">Add Task</button>
+  <button id="add-habit">Add Habit</button>
+  <button id="add-task">Add Task</button>
 </div>
 
-
-<!-- MODAL -->
-
+<!-- Modal -->
 <div id="modal" class="modal hidden">
   <div class="modal-content">
     <h3 id="modal-title"></h3>
-    <input id="input-name" placeholder="Name">
+    <input id="input-name" placeholder="Name" autocomplete="off">
     <button id="save-btn">Save</button>
     <button id="cancel-btn">Cancel</button>
   </div>
 </div>
 
-<div class="modal-content">
-
-<h3 id="modal-title"></h3>
-
-<input id="input-name" placeholder="Name">
-
-<button id="save-btn">Save</button>
-<button id="cancel-btn">Cancel</button>
-
-</div>
-
-</div>
-
-
-<!-- BOTTOM NAV -->
-
+<!-- Bottom Nav -->
 <nav class="bottom-nav">
-<button data-view="dashboard">Dashboard</button>
-<button data-view="habits">Habits</button>
-<button data-view="tasks">Tasks</button>
+  <button data-view="dashboard">Dashboard</button>
+  <button data-view="habits">Habits</button>
+  <button data-view="tasks">Tasks</button>
 </nav>
 
-
 <script src="app.js"></script>
-
 </body>
 </html>

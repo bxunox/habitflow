@@ -1,239 +1,120 @@
-const habits = JSON.parse(localStorage.getItem("habits")) || [];
-const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-const heatmap = JSON.parse(localStorage.getItem("heatmap")) || {};
+document.addEventListener("DOMContentLoaded", () => {
 
-const habitList = document.getElementById("habit-list");
-const taskList = document.getElementById("task-list");
-const completedList = document.getElementById("completed-list");
+  const habits = JSON.parse(localStorage.getItem("habits")) || [];
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-const modal = document.getElementById("modal");
-const title = document.getElementById("modal-title");
-const input = document.getElementById("input-name");
-const saveBtn = document.getElementById("save-btn");
-const cancelBtn = document.getElementById("cancel-btn");
+  const habitList = document.getElementById("habit-list");
+  const taskList = document.getElementById("task-list");
+  const completedList = document.getElementById("completed-list");
 
-function save() {
-localStorage.setItem("habits", JSON.stringify(habits));
-localStorage.setItem("tasks", JSON.stringify(tasks));
-localStorage.setItem("heatmap", JSON.stringify(heatmap));
-}
+  const modal = document.getElementById("modal");
+  const input = document.getElementById("input-name");
+  const saveBtn = document.getElementById("save-btn");
+  const cancelBtn = document.getElementById("cancel-btn");
 
-function today() {
-return new Date().toISOString().slice(0,10);
-}
+  const fab = document.getElementById("fab");
+  const menu = document.getElementById("fab-menu");
 
-function renderHabits(){
+  let mode = "";
 
-habitList.innerHTML="";
+  // Save data
+  function saveData(){
+    localStorage.setItem("habits", JSON.stringify(habits));
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    renderProgress();
+  }
 
-habits.forEach((habit,i)=>{
+  // Render Habits
+  function renderHabits(){
+    habitList.innerHTML="";
+    habits.forEach((habit,index)=>{
+      const div = document.createElement("div");
+      div.className="habit-item";
+      div.innerHTML=`<span>${habit.name} 🔥${habit.streak || 0}</span>
+                     <button>${habit.done ? "✓":"Done"}</button>`;
+      div.querySelector("button").onclick=()=>{
+        habit.done = !habit.done;
+        if(habit.done) habit.streak = (habit.streak||0)+1;
+        saveData();
+        renderHabits();
+      };
+      habitList.appendChild(div);
+    });
+  }
 
-const item=document.createElement("div");
-item.className="habit-item";
+  // Render Tasks
+  function renderTasks(){
+    taskList.innerHTML="";
+    completedList.innerHTML="";
+    tasks.forEach((task,index)=>{
+      const div = document.createElement("div");
+      div.className="task-item";
+      div.innerHTML=`<span>${task.name}</span>
+                     <button>✓</button>`;
+      div.querySelector("button").onclick=()=>{
+        task.done = true;
+        saveData();
+        renderTasks();
+      };
+      if(task.done) completedList.appendChild(div);
+      else taskList.appendChild(div);
+    });
+  }
 
-item.innerHTML=`
-<span>${habit.name} 🔥${habit.streak}</span>
-<button>${habit.done ? "✓":"Done"}</button>
-`;
+  // Render progress on Dashboard
+  function renderProgress(){
+    const doneHabits = habits.filter(h=>h.done).length;
+    const doneTasks = tasks.filter(t=>t.done).length;
+    document.getElementById("habits-progress").innerText = `${doneHabits} / ${habits.length}`;
+    document.getElementById("tasks-progress").innerText = `${doneTasks} / ${tasks.length}`;
+  }
 
-item.querySelector("button").onclick=()=>{
+  // Initial render
+  renderHabits();
+  renderTasks();
+  renderProgress();
 
-habit.done=!habit.done;
+  // Floating + menu toggle
+  fab.addEventListener("click", ()=>{ menu.classList.toggle("hidden"); });
 
-if(habit.done){
-habit.streak++;
-updateHeatmap();
-}
+  // Open modal
+  document.getElementById("add-habit").addEventListener("click", ()=>{
+    mode="habit";
+    document.getElementById("modal-title").innerText="New Habit";
+    modal.classList.remove("hidden");
+  });
 
-save();
-render();
+  document.getElementById("add-task").addEventListener("click", ()=>{
+    mode="task";
+    document.getElementById("modal-title").innerText="New Task";
+    modal.classList.remove("hidden");
+  });
 
-};
+  // Save modal
+  saveBtn.addEventListener("click", ()=>{
+    const name=input.value.trim();
+    if(name==="") return;
+    if(mode==="habit") habits.push({name, streak:0, done:false});
+    if(mode==="task") tasks.push({name, done:false});
+    input.value="";
+    modal.classList.add("hidden");
+    saveData();
+    renderHabits();
+    renderTasks();
+  });
 
-habitList.appendChild(item);
+  // Cancel modal
+  cancelBtn.addEventListener("click", ()=>{
+    input.value="";
+    modal.classList.add("hidden");
+  });
+
+  // Bottom nav
+  document.querySelectorAll(".bottom-nav button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+      document.getElementById(btn.dataset.view).classList.add("active");
+    });
+  });
 
 });
-
-}
-
-function renderTasks(){
-
-taskList.innerHTML="";
-completedList.innerHTML="";
-
-tasks.forEach((task,i)=>{
-
-const item=document.createElement("div");
-item.className="task-item";
-
-item.innerHTML=`
-<span>${task.name}</span>
-<button>✓</button>
-`;
-
-item.querySelector("button").onclick=()=>{
-task.done=true;
-save();
-render();
-};
-
-if(task.done){
-completedList.appendChild(item);
-}else{
-taskList.appendChild(item);
-}
-
-});
-
-}
-
-function renderProgress(){
-
-const doneHabits = habits.filter(h=>h.done).length;
-const doneTasks = tasks.filter(t=>t.done).length;
-
-document.getElementById("habits-progress").innerText = `${doneHabits} / ${habits.length}`;
-document.getElementById("tasks-progress").innerText = `${doneTasks} / ${tasks.length}`;
-
-let total=0;
-
-if(habits.length + tasks.length > 0){
-total = Math.round(((doneHabits+doneTasks)/(habits.length+tasks.length))*100);
-}
-
-document.getElementById("total-progress").innerText = `${total}%`;
-
-document.getElementById("habits-bar").style.width =
-habits.length ? (doneHabits/habits.length*100)+"%" : "0%";
-
-document.getElementById("tasks-bar").style.width =
-tasks.length ? (doneTasks/tasks.length*100)+"%" : "0%";
-
-}
-
-function updateHeatmap(){
-
-const day = today();
-
-if(!heatmap[day]) heatmap[day]=0;
-
-heatmap[day]++;
-
-save();
-renderHeatmap();
-
-}
-
-function renderHeatmap(){
-
-const container=document.getElementById("heatmap");
-container.innerHTML="";
-
-const days=30;
-
-for(let i=days;i>=0;i--){
-
-const date=new Date();
-date.setDate(date.getDate()-i);
-
-const key=date.toISOString().slice(0,10);
-
-const value=heatmap[key] || 0;
-
-const cell=document.createElement("div");
-
-if(value==1) cell.classList.add("lvl1");
-if(value==2) cell.classList.add("lvl2");
-if(value>=3) cell.classList.add("lvl3");
-
-container.appendChild(cell);
-
-}
-
-}
-
-function render(){
-renderHabits();
-renderTasks();
-renderProgress();
-renderHeatmap();
-}
-
-render();
-
-
-const fab=document.getElementById("fab");
-const menu=document.getElementById("fab-menu");
-
-fab.onclick=()=>{
-menu.classList.toggle("hidden");
-};
-
-
-let mode="";
-
-document.getElementById("add-habit").onclick=()=>{
-mode="habit";
-title.innerText="New Habit";
-};
-
-document.getElementById("add-task").onclick=()=>{
-mode="task";
-title.innerText="New Task";
-};
-
-
-saveBtn.onclick=()=>{
-
-const name=input.value.trim();
-
-if(name==="") return;
-
-if(mode==="habit"){
-habits.push({
-name:name,
-streak:0,
-done:false
-});
-}
-
-if(mode==="task"){
-tasks.push({
-name:name,
-done:false
-});
-}
-
-input.value="";
-modal.classList.add("hidden");
-
-save();
-render();
-
-};
-
-
-cancelBtn.onclick=()=>{
-modal.classList.add("hidden");
-input.value="";
-};
-
-
-document.querySelectorAll(".bottom-nav button").forEach(btn=>{
-
-btn.onclick=()=>{
-
-document.querySelectorAll(".view").forEach(v=>{
-v.classList.remove("active");
-});
-
-document.getElementById(btn.dataset.view).classList.add("active");
-
-};
-
-});
-
-
-if("serviceWorker" in navigator){
-navigator.serviceWorker.register("service-worker.js");
-}
